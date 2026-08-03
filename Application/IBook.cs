@@ -7,7 +7,7 @@ namespace Application
 {
     public interface IBookRepository
     {
-        IEnumerable<Book> GetAll();
+        IEnumerable<Book> GetAll(string? genre = null, bool? available = null);
 
         Book? GetById(string id);
 

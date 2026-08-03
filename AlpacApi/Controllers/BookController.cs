@@ -17,10 +17,11 @@ namespace AlpacApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Book>> Get()
+        public ActionResult<IEnumerable<Book>> Get([FromQuery] string? genre, [FromQuery] bool? available)
         {
-            var books = _repository.GetAll();
-            return Ok(books); // Retorna 200 OK
+            // Pasamos ambos filtros al repositorio
+            var books = _repository.GetAll(genre, available);
+            return Ok(books);
         }
 
         [HttpGet("{id}")]

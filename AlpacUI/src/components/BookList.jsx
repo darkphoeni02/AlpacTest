@@ -1,67 +1,50 @@
-// src/components/BookList.jsx
-import { useBooks } from '../hooks/useBooks';
+import { deleteBook } from '../services/bookService';
 
-export const BookList = () => {
-    // Consumimos nuestro Custom Hook limpiamente
-    const { books, loading, error } = useBooks();
+export const BookList = ({ books, loading, error, onRefresh, onEdit }) => {
 
-    // 1. Manejo visible del estado: Cargando
-    if (loading) {
-        return (
-            <div style={{ padding: '20px', textAlign: 'center' }}>
-                <p>Cargando el catálogo de libros...</p>
-            </div>
-        );
-    }
+    // Función para manejar la eliminación con confirmación
+    const handleDelete = async (id) => {
+        // window.confirm es nativo, bloquea la pantalla y retorna true/false
+        if (window.confirm('¿Estás seguro de que deseas eliminar este libro?')) {
+            try {
+                await deleteBook(id);
+                onRefresh(); // Recargamos la tabla tras eliminar
+            } catch (err) {
+                alert('No se pudo eliminar: ' + err.message);
+            }
+        }
+    };
 
-    // 2. Manejo visible del estado: Error
-    if (error) {
-        return (
-            <div style={{ padding: '20px', color: 'red', textAlign: 'center' }}>
-                <p>Ocurrió un problema: {error}</p>
-                <button onClick={() => window.location.reload()}>Reintentar</button>
-            </div>
-        );
-    }
+    if (loading) return <p>Cargando el catálogo de libros...</p>;
+    if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+    if (books.length === 0) return <p>No hay libros que coincidan con la búsqueda.</p>;
 
-    // 3. Manejo visible del estado: Vacío
-    if (books.length === 0) {
-        return (
-            <div style={{ padding: '20px', textAlign: 'center' }}>
-                <p>No hay libros registrados en este momento.</p>
-            </div>
-        );
-    }
-
-    // 4. Manejo visible del estado: Éxito (Renderizado de la tabla)
     return (
-        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-            <h2>Catálogo de Libros</h2>
-            
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-                <thead>
-                    <tr style={{ backgroundColor: '#f4f4f4', textAlign: 'left' }}>
-                        <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Título</th>
-                        <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Autor</th>
-                        <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Año</th>
-                        <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Género</th>
-                        <th style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>Estado</th>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+                <tr style={{ backgroundColor: '#eee', textAlign: 'left' }}>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Género</th>
+                    <th>Estado</th>
+                    <th>Acciones</th> {/* Nueva columna */}
+                </tr>
+            </thead>
+            <tbody>
+                {books.map((book) => (
+                    <tr key={book.id}>
+                        <td>{book.title}</td>
+                        <td>{book.author}</td>
+                        <td>{book.genre}</td>
+                        <td>{book.available ? '🟢' : '🔴'}</td>
+                        <td>
+                            {/* Botones de acción */}
+                            <button onClick={() => onEdit(book)} style={{ marginRight: '5px' }}>Editar</button>
+                            <button onClick={() => handleDelete(book.id)} style={{ color: 'red' }}>Eliminar</button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    {books.map((book) => (
-                        <tr key={book.id}>
-                            <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>{book.title}</td>
-                            <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>{book.author}</td>
-                            <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>{book.year}</td>
-                            <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>{book.genre}</td>
-                            <td style={{ padding: '10px', borderBottom: '1px solid #ddd' }}>
-                                {book.available ? '🟢 Disponible' : '🔴 Prestado'}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                ))}
+            </tbody>
+        </table>
     );
 };
