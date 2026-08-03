@@ -5,11 +5,16 @@ using System.Text;
 
 namespace Application
 {
-    public interface IBook
+    public interface IBookRepository
     {
-        BookEntity GetBook();
+        IEnumerable<Book> GetAll();
 
-        BookEntity GetBookEntity(int id);
+        Book? GetById(string id);
 
+        void Add(Book book);
+
+        void Update(Book book);
+
+        void Delete(string id);
     }
 }
