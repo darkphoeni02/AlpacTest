@@ -54,25 +54,35 @@ export const BookForm = ({ onSuccess, bookToEdit, onCancel }) => {
             
             {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <input type="text" name="title" placeholder="Título (Obligatorio)" required value={formData.title} onChange={handleChange} />
-                <input type="text" name="author" placeholder="Autor (Obligatorio)" required value={formData.author} onChange={handleChange} />
-                <input type="number" name="year" placeholder="Año" required value={formData.year} onChange={handleChange} />
-                <input type="text" name="genre" placeholder="Género" value={formData.genre} onChange={handleChange} />
-                
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                    <button type="submit" disabled={isSubmitting} style={{ flex: '1' }}>
-                        {isSubmitting ? 'Guardando...' : (bookToEdit ? 'Actualizar' : 'Guardar')}
-                    </button>
-                    
-                    {/* Botón para cancelar la edición */}
-                    {bookToEdit && (
-                        <button type="button" onClick={onCancel} style={{ flex: '1', backgroundColor: '#ccc' }}>
-                            Cancelar
-                        </button>
-                    )}
-                </div>
-            </form>
+           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <input type="text" name="title" placeholder="Título (Obligatorio)" required value={formData.title} onChange={handleChange} />
+    <input type="text" name="author" placeholder="Autor (Obligatorio)" required value={formData.author} onChange={handleChange} />
+    <input type="number" name="year" placeholder="Año" required value={formData.year} onChange={handleChange} />
+    <input type="text" name="genre" placeholder="Género" value={formData.genre} onChange={handleChange} />
+    
+    {/* 🟢 NUEVO: Checkbox para controlar la disponibilidad */}
+    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+        <input 
+            type="checkbox" 
+            name="available" 
+            checked={formData.available} 
+            onChange={handleChange} 
+        />
+        Libro Disponible para préstamo
+    </label>
+    
+    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+        <button type="submit" disabled={isSubmitting} style={{ flex: '1' }}>
+            {isSubmitting ? 'Guardando...' : (bookToEdit ? 'Actualizar' : 'Guardar')}
+        </button>
+        
+        {bookToEdit && (
+            <button type="button" onClick={onCancel} style={{ flex: '1', backgroundColor: '#ccc' }}>
+                Cancelar
+            </button>
+        )}
+    </div>
+</form>
         </div>
     );
 };
